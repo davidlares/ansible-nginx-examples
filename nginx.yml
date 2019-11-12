@@ -12,7 +12,7 @@
       apt:
         name: nginx
         state: present
-      notify: Stop nginx
+      # notify: Stop nginx
 
     - name: Using Jinja2 template for variables and loops
       template:
