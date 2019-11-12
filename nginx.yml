@@ -1,0 +1,36 @@
+- hosts: webservers
+
+  remote_user: vagrant
+
+  vars:
+    http_port: 80
+    items: [1,2,3,4,5]
+    files: ["one","two","three"]
+
+  tasks:
+    - name: Nginx installation on port {{ http_port }}
+      apt:
+        name: nginx
+        state: present
+      notify: Stop nginx
+
+    - name: Using Jinja2 template for variables and loops
+      template:
+        src: example.txt.j2
+        dest: /tmp/example.conf
+
+    - debug:
+        var: ansible_all_ipv4_addresses
+
+    - name: Check OS version
+      template: src=example.txt.j2 dest=/tmp/when_test.conf
+      when: ansible_os_family == "Debian"
+
+    - name: "Files loop"
+      file: path="/tmp/{{ item }}" state=touch
+      loop: "{{ files }}"
+      when: item == "one"
+
+  handlers:
+    - name: Stop nginx
+      service: name=nginx state=stopped
